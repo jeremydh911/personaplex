@@ -34,6 +34,45 @@ const TEXT_PROMPT_PRESETS = [
   },
 ];
 
+const GENERATION_PARAM_PRESETS = [
+  {
+    label: "Balanced (Default)",
+    params: {
+      text_temperature: 0.7,
+      text_topk: 25,
+      audio_temperature: 0.8,
+      audio_topk: 250,
+      repetition_penalty_context: 64,
+      repetition_penalty: 1.0,
+      pad_mult: 0,
+    },
+  },
+  {
+    label: "Creative",
+    params: {
+      text_temperature: 0.9,
+      text_topk: 50,
+      audio_temperature: 1.0,
+      audio_topk: 300,
+      repetition_penalty_context: 64,
+      repetition_penalty: 1.1,
+      pad_mult: 0,
+    },
+  },
+  {
+    label: "Precise",
+    params: {
+      text_temperature: 0.5,
+      text_topk: 15,
+      audio_temperature: 0.6,
+      audio_topk: 150,
+      repetition_penalty_context: 96,
+      repetition_penalty: 1.2,
+      pad_mult: 0,
+    },
+  },
+];
+
 interface HomepageProps {
   showMicrophoneAccessMessage: boolean;
   startConnection: () => Promise<void>;
@@ -41,6 +80,13 @@ interface HomepageProps {
   setTextPrompt: (value: string) => void;
   voicePrompt: string;
   setVoicePrompt: (value: string) => void;
+  setTextTemperature: (value: number) => void;
+  setTextTopk: (value: number) => void;
+  setAudioTemperature: (value: number) => void;
+  setAudioTopk: (value: number) => void;
+  setPadMult: (value: number) => void;
+  setRepetitionPenalty: (value: number) => void;
+  setRepetitionPenaltyContext: (value: number) => void;
 }
 
 const Homepage = ({
@@ -50,11 +96,28 @@ const Homepage = ({
   setTextPrompt,
   voicePrompt,
   setVoicePrompt,
+  setTextTemperature,
+  setTextTopk,
+  setAudioTemperature,
+  setAudioTopk,
+  setPadMult,
+  setRepetitionPenalty,
+  setRepetitionPenaltyContext,
 }: HomepageProps) => {
+  const applyGenerationPreset = (preset: typeof GENERATION_PARAM_PRESETS[0]) => {
+    setTextTemperature(preset.params.text_temperature);
+    setTextTopk(preset.params.text_topk);
+    setAudioTemperature(preset.params.audio_temperature);
+    setAudioTopk(preset.params.audio_topk);
+    setPadMult(preset.params.pad_mult);
+    setRepetitionPenalty(preset.params.repetition_penalty);
+    setRepetitionPenaltyContext(preset.params.repetition_penalty_context);
+  };
+
   return (
     <div className="text-center h-screen w-screen p-4 flex flex-col items-center pt-8">
       <div className="mb-6">
-        <h1 className="text-4xl text-black">PersonaPlex</h1>
+        <h1 className="text-4xl text-black">Aloha-Voice</h1>
         <p className="text-sm text-gray-600 mt-2">
           Full duplex conversational AI with text and voice control.
         </p>
@@ -90,6 +153,26 @@ const Homepage = ({
           />
           <div className="text-right text-xs text-gray-500 mt-1">
             {textPrompt.length}/1000
+          </div>
+        </div>
+
+        <div className="w-full">
+          <label className="block text-left text-base font-medium text-gray-700 mb-2">
+            Generation Quality:
+          </label>
+          <div className="border border-gray-300 rounded p-3 bg-gray-50">
+            <span className="text-xs font-medium text-gray-500 block mb-2">Presets:</span>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {GENERATION_PARAM_PRESETS.map((preset) => (
+                <button
+                  key={preset.label}
+                  onClick={() => applyGenerationPreset(preset)}
+                  className="px-3 py-1 text-xs bg-white hover:bg-gray-100 text-gray-700 rounded-full border border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-[#76b900]"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -209,6 +292,13 @@ export const Queue:FC = () => {
           setTextPrompt={modelParams.setTextPrompt}
           voicePrompt={modelParams.voicePrompt}
           setVoicePrompt={modelParams.setVoicePrompt}
+          setTextTemperature={modelParams.setTextTemperature}
+          setTextTopk={modelParams.setTextTopk}
+          setAudioTemperature={modelParams.setAudioTemperature}
+          setAudioTopk={modelParams.setAudioTopk}
+          setPadMult={modelParams.setPadMult}
+          setRepetitionPenalty={modelParams.setRepetitionPenalty}
+          setRepetitionPenaltyContext={modelParams.setRepetitionPenaltyContext}
         />
       )}
     </>
