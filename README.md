@@ -66,6 +66,37 @@ Access the Web UI from a browser at `localhost:8998` if running locally, otherwi
 Access the Web UI directly at https://11.54.401.33:8998
 ```
 
+### Aloha-Voice Web UI
+
+PersonaPlex includes an integrated Aloha-Voice web interface that provides an intuitive way to control voice, persona, and generation parameters.
+
+**Building the Aloha-Voice Frontend:**
+
+First, build the frontend assets:
+```bash
+cd client
+npm install
+npm run build
+cd ..
+```
+
+**Launch Server with Aloha-Voice UI:**
+
+Launch the server pointing to the built frontend:
+```bash
+SSL_DIR=$(mktemp -d); python -m moshi.server --ssl "$SSL_DIR" --static client/dist
+```
+
+The Aloha-Voice UI will be available at `https://localhost:8998` and features:
+- **Voice Selection**: Choose from natural and variety voice presets (NATF0-3, NATM0-3, VARF0-4, VARM0-4)
+- **Persona/System Prompts**: Customize the AI's role and behavior with text prompts
+- **Generation Quality Presets**: Quick access to balanced, creative, and precise parameter configurations
+  - **Balanced** (default): Standard quality for general conversations
+  - **Creative**: Higher temperature settings for more varied and expressive responses
+  - **Precise**: Lower temperature with stricter sampling for focused, deterministic outputs
+
+All settings map to PersonaPlex's existing WebSocket parameters (`voice_prompt`, `text_prompt`, `text_temperature`, `text_topk`, `audio_temperature`, `audio_topk`, `repetition_penalty_context`, `repetition_penalty`, `pad_mult`).
+
 ### Offline Evaluation
 
 For offline evaluation use the offline script that streams in an input wav file and produces an output wav file from the captured output stream. The output file will be the same duration as the input file.
