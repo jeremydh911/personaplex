@@ -140,10 +140,11 @@ class ServerState:
         peer_port = request.transport.get_extra_info("peername")[1]  # Port
         clog.log("info", f"Incoming connection from {peer}:{peer_port}")
 
-        # self.lm_gen.temp = float(request.query["audio_temperature"])
-        # self.lm_gen.temp_text = float(request.query["text_temperature"])
-        # self.lm_gen.top_k_text = max(1, int(request.query["text_topk"]))
-        # self.lm_gen.top_k = max(1, int(request.query["audio_topk"]))
+        # Apply generation parameters from query string
+        self.lm_gen.temp = float(request.query.get("audio_temperature", "0.8"))
+        self.lm_gen.temp_text = float(request.query.get("text_temperature", "0.7"))
+        self.lm_gen.top_k = max(1, int(request.query.get("audio_topk", "250")))
+        self.lm_gen.top_k_text = max(1, int(request.query.get("text_topk", "25")))
         
         # Construct full voice prompt path
         requested_voice_prompt_path = None
@@ -255,6 +256,7 @@ class ServerState:
             clog.log("info", f"text prompt: {request.query['text_prompt']}")
         if len(request.query["voice_prompt"]) > 0:
             clog.log("info", f"voice prompt: {voice_prompt_path} (requested: {requested_voice_prompt_path})")
+        clog.log("info", f"generation params: text_temp={self.lm_gen.temp_text}, text_topk={self.lm_gen.top_k_text}, audio_temp={self.lm_gen.temp}, audio_topk={self.lm_gen.top_k}")
         close = False
         async with self.lock:
             if seed is not None and seed != -1:
